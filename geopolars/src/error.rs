@@ -1,5 +1,5 @@
 use core::any::type_name;
-use polars::error::PolarsError;
+use polars::error::{PolarsError, ErrString};
 use thiserror::Error;
 
 #[cfg(feature = "proj")]
@@ -32,6 +32,12 @@ pub type Result<T> = std::result::Result<T, GeopolarsError>;
 impl From<PolarsError> for GeopolarsError {
     fn from(err: PolarsError) -> Self {
         Self::PolarsError(Box::new(err))
+    }
+}
+
+impl Into<PolarsError> for GeopolarsError {
+    fn into(self) -> PolarsError {
+        PolarsError::ComputeError(ErrString::Owned(format!("GeoPolars error: {}", self)))
     }
 }
 
